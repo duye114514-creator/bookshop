@@ -45,16 +45,14 @@ python -m venv venv
 
 ### 3. 安装依赖
 
-pip install django
-
+pip install django  
 pip install pillow
 
 ---
 
 ### 4. 数据库迁移
 
-python manage.py makemigrations
-
+python manage.py makemigrations  
 python manage.py migrate
 
 ---
