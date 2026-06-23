@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ post.title }}</title>
+
+    <style>
+        body{
+            background:#f5f5f5;
+            font-family: Arial, sans-serif;
+        }
+
+        .container{
+            width:800px;
+            margin:30px auto;
+        }
+
+        /* 帖子主体 */
+        .post-card{
+            background:#fff;
+            padding:25px;
+            border-radius:12px;
+            box-shadow:0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .title{
+            font-size:22px;
+            font-weight:bold;
+            margin-bottom:10px;
+        }
+
+        .meta{
+            font-size:13px;
+            color:#999;
+            margin-bottom:20px;
+        }
+
+        .content{
+            font-size:15px;
+            line-height:1.8;
+            color:#333;
+            white-space:pre-line;
+        }
+
+        /* 分割线 */
+        .divider{
+            margin:20px 0;
+            border:none;
+            border-top:1px solid #eee;
+        }
+
+        /* 评论区 */
+        .comment-box{
+            margin-top:20px;
+            background:#fff;
+            padding:20px;
+            border-radius:12px;
+            box-shadow:0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .comment-title{
+            font-size:16px;
+            margin-bottom:15px;
+        }
+
+        .comment-item{
+            padding:8px 0;
+            border-bottom:1px solid #f2f2f2;
+        }
+
+        .comment-user{
+            font-weight:bold;
+            font-size:13px;
+        }
+
+        .comment-content{
+            font-size:14px;
+            color:#333;
+            margin-left:5px;
+        }
+
+        /* 输入框 */
+        .comment-form{
+            margin-top:15px;
+            display:flex;
+            gap:10px;
+        }
+
+        input{
+            flex:1;
+            padding:10px;
+            border:1px solid #ddd;
+            border-radius:8px;
+            outline:none;
+        }
+
+        button{
+            padding:10px 15px;
+            background:#ff6700;
+            border:none;
+            color:#fff;
+            border-radius:8px;
+            cursor:pointer;
+        }
+
+        button:hover{
+            background:#e65c00;
+        }
+
+        .empty{
+            color:#999;
+            font-size:13px;
+        }
+
+        .back{
+            display:inline-block;
+            margin-top:15px;
+            color:#999;
+            text-decoration:none;
+        }
+
+        .back:hover{
+            color:#ff6700;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <!-- 帖子 -->
+    <div class="post-card">
+
+        <div class="title">{{ post.title }}</div>
+
+        <div class="meta">
+            👤 {{ post.user.username }}
+        </div>
+
+        <div class="content">
+            {{ post.content }}
+        </div>
+
+    </div>
+<!--    编辑删除-->
+    {% if request.user == post.user %}
+    <a href="{% url 'edit_post' post.id %}">编辑</a> |
+    <a href="{% url 'delete_post' post.id %}" style="color:red;"
+       onclick="return confirm('确定删除？')">
+       删除
+    </a>
+{% endif %}
+    <hr class="divider">
+
+    <!-- 评论区 -->
+    <div class="comment-box">
+
+        <div class="comment-title">💬 评论区</div>
+
+        {% for c in post.comments.all %}
+        <div class="comment-item">
+            <span class="comment-user">{{ c.user.username }}</span>
+            <span class="comment-content">：{{ c.content }}</span>
+        </div>
+        {% empty %}
+        <div class="empty">暂无评论</div>
+        {% endfor %}
+
+        <form method="post" action="{% url 'add_post_comment' post.id %}" class="comment-form">
+            {% csrf_token %}
+            <input type="text" name="content" placeholder="写下你的评论..." required>
+            <button type="submit">发送</button>
+        </form>
+
+    </div>
+
+    <a href="{% url 'forum' %}" class="back">← 返回论坛</a>
+
+</div>
+
+</body>
+</html>

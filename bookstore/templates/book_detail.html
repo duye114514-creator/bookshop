@@ -1,0 +1,423 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+
+<style>
+.detail{
+    width:1000px;
+    margin:40px auto;
+    display:flex;
+    gap:40px;
+    background:#fff;
+    padding:20px;
+    border-radius:14px;
+    box-shadow:0 8px 25px rgba(0,0,0,0.05);
+}
+
+/* 左侧图片区 */
+.left{
+    width:420px;
+}
+
+.main-img{
+    width:100%;
+    height:420px;
+    border-radius:12px;
+    overflow:hidden;
+    border:1px solid #eee;
+}
+
+.main-img img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+}
+
+
+.zoom img{
+    position:absolute;
+    width:200%;
+}
+
+/* 小图 */
+.thumbs{
+    display:flex;
+    gap:10px;
+    margin-top:12px;
+}
+
+.thumbs img{
+    width:64px;
+    height:64px;
+    border-radius:8px;
+    cursor:pointer;
+    border:2px solid transparent;
+    object-fit:cover;
+}
+
+.thumbs img:hover{
+    border:2px solid #ff6a00;
+}
+
+/* 右侧信息 */
+.right{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+}
+
+.right h2{
+    font-size:22px;
+    margin-bottom:10px;
+    color:#222;
+}
+
+.desc{
+    background:#f7f7f7;
+    padding:12px;
+    border-radius:10px;
+    font-size:14px;
+    color:#666;
+    margin-bottom:15px;
+}
+
+.price{
+    font-size:26px;
+    color:#e4393c;
+    font-weight:bold;
+    margin:10px 0;
+}
+
+/* 按钮 */
+.actions{
+    margin-top:auto;
+    display:flex;
+    gap:10px;
+    align-items:center;
+}
+
+
+/* 按钮 */
+.buy, .cart{
+    padding:10px 18px;
+    font-size:14px;
+    border-radius:10px;
+    cursor:pointer;
+    font-weight:500;
+    line-height:1;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    min-width:120px;   /* 👈 关键：统一宽度 */
+    box-sizing:border-box;
+}
+
+/* 主按钮 */
+.buy{
+    background:linear-gradient(135deg,#ff6a00,#ff8a00);
+    color:#fff;
+    border:none;
+}
+
+/* 次按钮 */
+.cart{
+    background:#fff;
+    color:#ff6a00;
+    border:1px solid #ff6a00;
+}
+
+/* 收藏 */
+.fav{
+    font-size:24px;
+    cursor:pointer;
+    margin-left:auto;
+    transition:0.2s;
+}
+
+.fav:hover{
+    transform:scale(1.2);
+}
+
+/* 提示 */
+.toast{
+    position:fixed;
+    top:80px;
+    right:20px;
+    background:rgba(0,0,0,0.8);
+    color:#fff;
+    padding:10px 15px;
+    border-radius:8px;
+    display:none;
+    font-size:14px;
+    z-index:9999;
+}
+
+/* 评论区 */
+
+/* 外层 */
+.comments{
+    width:1000px;
+    margin:40px auto;
+}
+
+/* 白色卡片 */
+.comment-box{
+    background:#fff;
+    padding:20px;
+    border-radius:14px;
+    box-shadow:0 8px 25px rgba(0,0,0,0.05);
+}
+
+/* 标题 */
+.comment-title{
+    font-size:18px;
+    margin-bottom:15px;
+    border-left:4px solid #ff6700;
+    padding-left:10px;
+}
+
+/* 列表 */
+.comment-list{
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+}
+
+/* 单条评论 */
+.comment-item{
+    background:#f9f9f9;
+    padding:12px;
+    border-radius:10px;
+    transition:0.2s;
+}
+
+.comment-item:hover{
+    background:#f2f2f2;
+}
+
+/* 顶部信息 */
+.comment-header{
+    display:flex;
+    justify-content:space-between;
+    font-size:13px;
+    color:#666;
+    margin-bottom:6px;
+}
+
+/* 内容 */
+.comment-content{
+    font-size:14px;
+    color:#333;
+}
+
+/* 删除按钮 */
+.delete{
+    font-size:12px;
+    color:#ff4d4f;
+    text-decoration:none;
+}
+
+.delete:hover{
+    text-decoration:underline;
+}
+
+/* 输入框 */
+.comment-form{
+    margin-top:15px;
+}
+
+.comment-form textarea{
+    width:100%;
+    height:80px;
+    border:1px solid #ddd;
+    border-radius:10px;
+    padding:10px;
+    resize:none;
+    outline:none;
+}
+
+.comment-form textarea:focus{
+    border-color:#ff6700;
+}
+
+/* 提交按钮 */
+.comment-form button{
+    margin-top:10px;
+    background:linear-gradient(135deg,#ff6a00,#ff8a00);
+    color:#fff;
+    border:none;
+    padding:8px 16px;
+    border-radius:10px;
+    cursor:pointer;
+}
+
+/* 未登录提示 */
+.login-tip{
+    color:#999;
+    font-size:13px;
+    padding:10px 0;
+}
+
+/* 空状态 */
+.empty{
+    color:#999;
+    font-size:13px;
+    padding:10px 0;
+}
+</style>
+
+<div class="detail">
+
+<!-- 左 -->
+<div class="left">
+
+    <!-- 大图 -->
+    <div class="main-img" id="main">
+        <img id="big" src="{% if images %}{{ images.0.image.url }}{% else %}{{ book.image.url }}{% endif %}">
+
+    </div>
+
+    <!-- 小图 -->
+    <div class="thumbs">
+        {% for img in images %}
+        <img src="{{ img.image.url }}" onclick="changeImg(this)">
+        {% endfor %}
+    </div>
+
+</div>
+
+<!-- 右 -->
+<div class="right">
+    <h2>{{ book.title }}</h2>
+
+    <!-- 商品详情 -->
+    <div class="desc">
+        {{ book.description|default:"暂无商品描述" }}
+    </div>
+
+    <p class="price">￥{{ book.price }}</p>
+
+    <div class="actions">
+        <form method="post" action="{% url 'buy_now' book.id %}">
+    {% csrf_token %}
+    <button type="submit" class="buy">立即购买</button>
+        </form>
+        <button class="cart" onclick="addToCart({{ book.id }})">加入购物车</button>
+        <span id="fav-btn" class="fav" onclick="toggleFav({{ book.id }})">
+    {% if is_fav %}⭐{% else %}☆{% endif %}
+</span>
+    </div>
+</div>
+
+</div>
+
+<!-- 评论区 -->
+<div class="comments">
+
+    <div class="comment-box">
+
+        <h3 class="comment-title">💬 用户评论</h3>
+
+        <!-- 评论列表 -->
+        <div class="comment-list">
+
+            {% for c in comments %}
+            <div class="comment-item">
+
+                <div class="comment-header">
+                    <span class="user">👤 {{ c.user.username }}</span>
+
+                    {% if c.user == user %}
+                    <a href="{% url 'delete_comment' c.id %}" class="delete">删除</a>
+                    {% endif %}
+                </div>
+
+                <div class="comment-content">
+                    {{ c.content }}
+                </div>
+
+            </div>
+            {% empty %}
+            <div class="empty">暂无评论，快来抢沙发～</div>
+            {% endfor %}
+
+        </div>
+
+        <!-- 评论输入区 -->
+        <div class="comment-form">
+
+            {% if user.is_authenticated %}
+            <form method="post" action="{% url 'add_comment' book.id %}">
+                {% csrf_token %}
+
+                <textarea name="content" placeholder="写下你的想法..." required></textarea>
+
+                <button type="submit">发表评论</button>
+            </form>
+            {% else %}
+            <div class="login-tip">请先登录再发表评论</div>
+            {% endif %}
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- 提示 -->
+<div class="toast" id="toast">加入成功！</div>
+
+<script>
+// 切换图片
+function changeImg(el){
+    document.getElementById('big').src = el.src;
+}
+
+// 加入购物车（不跳转）
+function showToast(text){
+    let t = document.getElementById('toast');
+    t.innerText = text;
+    t.style.display='block';
+
+    setTimeout(()=>{
+        t.style.display='none';
+    },1500);
+}
+
+function addToCart(id){
+    fetch(`/add_to_cart/${id}/`)
+    .then(()=>{
+        showToast('加入购物车成功 🛒');
+    });
+}
+
+
+// 收藏
+function toggleFav(id){
+    fetch(`/toggle_fav/${id}/`)
+    .then(res => res.json())
+    .then(data => {
+
+        let btn = document.getElementById('fav-btn');
+
+        if(data.status === 'added'){
+            btn.innerText = '⭐';
+            showToast('已收藏 ⭐');
+        }
+        else if(data.status === 'removed'){
+            btn.innerText = '☆';
+            showToast('已取消收藏');
+        }
+        else{
+            showToast('请先登录');
+        }
+
+    });
+}
+
+main.addEventListener('mouseleave', ()=>{
+    zoom.style.display='none';
+});
+</script>
+
+{% endblock %}

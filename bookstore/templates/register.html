@@ -1,0 +1,137 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<title>注册 - 知阅书坊</title>
+
+<style>
+body{
+    margin:0;
+    font-family:"Microsoft YaHei";
+    background:#f5f5f5;
+    display:flex;
+    height:100vh;
+}
+
+/* 左侧品牌 */
+.left{
+    flex:1;
+    background:linear-gradient(135deg,#ff7a18,#ffb347);
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    color:#fff;
+}
+
+.left h1{
+    font-size:34px;
+}
+
+.left p{
+    font-size:14px;
+    opacity:0.9;
+    text-align:center;
+    max-width:280px;
+}
+
+/* 右侧 */
+.right{
+    flex:1;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+
+.card{
+    width:380px;
+    background:#fff;
+    padding:35px;
+    border-radius:16px;
+    box-shadow:0 10px 30px rgba(0,0,0,0.08);
+}
+
+.title{
+    font-size:22px;
+    margin-bottom:5px;
+}
+
+.subtitle{
+    font-size:13px;
+    color:#999;
+    margin-bottom:20px;
+}
+
+.input{
+    width:100%;
+    padding:12px;
+    margin-bottom:12px;
+    border:1px solid #ddd;
+    border-radius:8px;
+}
+
+.input:focus{
+    border-color:#ff7a18;
+    box-shadow:0 0 0 3px rgba(255,122,24,0.1);
+}
+
+.btn{
+    width:100%;
+    padding:12px;
+    border:none;
+    border-radius:8px;
+    background:linear-gradient(135deg,#ff7a18,#ffb347);
+    color:#fff;
+    cursor:pointer;
+}
+
+.bottom{
+    text-align:center;
+    margin-top:15px;
+    font-size:13px;
+}
+
+.bottom a{
+    color:#ff7a18;
+    text-decoration:none;
+}
+</style>
+</head>
+
+<body>
+
+<div class="left">
+    <h1>📚 知阅书坊</h1>
+    <p>让每一本书都找到读它的人</p>
+</div>
+
+<div class="right">
+
+    <div class="card">
+
+        <div class="title">创建账号</div>
+        <div class="subtitle">加入你的阅读社区</div>
+
+        <form method="post">
+    {% csrf_token %}
+
+    <input class="input" type="text" name="username" placeholder="用户名">
+
+    <input class="input" type="password" name="password1" placeholder="密码">
+
+    <input class="input" type="password" name="password2" placeholder="确认密码">
+
+    <button class="btn">注册</button>
+        </form>
+
+        <div class="bottom">
+            已有账号？<a href="/login/">去登录</a>
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>

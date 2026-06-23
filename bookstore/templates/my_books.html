@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>我的书籍</title>
+
+    <style>
+        body{
+            background:#f5f5f5;
+            font-family: Arial;
+            margin:0;
+        }
+
+        .container{
+            width:900px;
+            margin:40px auto;
+        }
+
+        h2{
+            margin-bottom:20px;
+        }
+
+        .box{
+            background:#fff;
+            padding:20px;
+            border-radius:8px;
+            box-shadow:0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom:20px;
+        }
+
+        input, select, textarea{
+            width:100%;
+            padding:8px;
+            margin-bottom:12px;
+            border:1px solid #ddd;
+            border-radius:5px;
+        }
+
+        button{
+            padding:8px 16px;
+            background:#4CAF50;
+            color:#fff;
+            border:none;
+            border-radius:5px;
+            cursor:pointer;
+        }
+
+        button:hover{
+            background:#45a049;
+        }
+
+        .book-item{
+            display:flex;
+            align-items:center;
+            justify-content:space-between;
+            border-bottom:1px solid #eee;
+            padding:12px 0;
+        }
+
+        .book-left{
+            display:flex;
+            align-items:center;
+        }
+
+        .book-left img{
+            width:60px;
+            height:80px;
+            object-fit:cover;
+            margin-right:15px;
+            border-radius:5px;
+        }
+
+        .book-info p{
+            margin:2px 0;
+        }
+
+        .actions a{
+            margin-right:10px;
+            color:#007bff;
+            text-decoration:none;
+        }
+
+        .actions a:hover{
+            text-decoration:underline;
+        }
+
+        .delete-btn{
+            background:#dc3545;
+        }
+
+        .delete-btn:hover{
+            background:#c82333;
+        }
+
+        .empty{
+            color:#888;
+            text-align:center;
+            padding:20px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h2>📚 我的书籍</h2>
+
+    <!-- 发布新书 -->
+    <div class="box">
+        <h3>发布新书</h3>
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <label>书名</label>
+            {{ form.title }}
+
+            <label>作者</label>
+            {{ form.author }}
+
+            <label>价格</label>
+            {{ form.price }}
+
+            <label>描述</label>
+            {{ form.description }}
+
+            <label>库存</label>
+            {{ form.stock }}
+
+            <label>封面图片</label>
+            {{ form.image }}
+
+            <label>分类</label>
+            {{ form.category }}
+            <button type="submit">发布</button>
+        </form>
+    </div>
+
+    <!-- 我的书列表 -->
+    <div class="box">
+        <h3>我发布的书</h3>
+
+        {% for book in books %}
+        <div class="book-item">
+
+            <div class="book-left">
+                {% if book.image %}
+                <img src="{{ book.image.url }}">
+                {% else %}
+                <img src="/static/images/avatar.png">
+                {% endif %}
+
+                <div class="book-info">
+                    <p><strong>{{ book.title }}</strong></p>
+                    <p>作者：{{ book.author }}</p>
+                    <p>￥{{ book.price }}</p>
+                </div>
+            </div>
+
+            <div class="actions">
+                <a href="{% url 'edit_book' book.id %}">编辑</a>
+
+                <form method="post" action="{% url 'delete_book' book.id %}" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="delete-btn">删除</button>
+                </form>
+            </div>
+
+        </div>
+        {% empty %}
+        <div class="empty">你还没有发布书籍</div>
+        {% endfor %}
+
+    </div>
+
+</div>
+
+</body>
+</html>

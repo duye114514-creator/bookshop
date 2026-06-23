@@ -1,0 +1,121 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<style>
+.page{
+    width:900px;
+    margin:30px auto;
+}
+
+/* 顶部栏 */
+.top-bar{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:20px;
+}
+
+.home-btn{
+    text-decoration:none;
+    color:#666;
+}
+
+/* 标题 */
+.title{
+    font-size:22px;
+    font-weight:bold;
+    margin-bottom:15px;
+}
+
+/* 卡片 */
+.card{
+    background:#fff;
+    padding:20px;
+    border-radius:12px;
+    box-shadow:0 2px 10px rgba(0,0,0,0.05);
+    margin-bottom:20px;
+}
+
+/* 地址 */
+.addr-item{
+    padding:10px;
+    border:1px solid #eee;
+    border-radius:8px;
+    margin-bottom:10px;
+    cursor:pointer;
+}
+
+.addr-item:hover{
+    border-color:#ff6700;
+}
+
+/* 按钮 */
+.checkout-btn{
+    width:100%;
+    margin-top:15px;
+    padding:12px;
+    border:0;
+    border-radius:6px;
+    background:#ff6700;
+    color:#fff;
+    font-size:15px;
+}
+.checkout-btn:hover{opacity:0.9;}
+.submit{
+    background:#ff6700;
+    color:#fff;
+}
+
+.back{
+    background:#eee;
+    color:#333;
+}
+</style>
+
+<div class="page">
+
+    <div class="top-bar">
+        <a href="/" class="home-btn">🏠 返回首页</a>
+        <span>确认订单</span>
+    </div>
+
+    <div class="title">📦 选择收货地址</div>
+
+    <div class="card">
+
+        <form method="post">
+            {% csrf_token %}
+
+            {% for addr in addresses %}
+            <label class="addr-item">
+               <input type="radio" name="address" value="{{ addr.id }}" class="address-radio">
+                {{ addr.receiver_name }} | {{ addr.phone }} | {{ addr.detail }}
+            </label>
+            {% endfor %}
+
+            <p>总价：￥{{ total_price }}</p>
+
+            <button type="submit" id="submit-order" class="checkout-btn">
+                提交订单
+            </button>
+        </form>
+
+    </div>
+
+</div>
+
+<script>
+document.getElementById("submit-order").addEventListener("click", function(e){
+
+    // 找到选中的地址
+    const selected = document.querySelector("input[name='address']:checked");
+
+    if(!selected){
+        e.preventDefault(); // 阻止提交
+        alert("⚠️ 请先选择收货地址！");
+        return false;
+    }
+
+});
+</script>
+{% endblock %}

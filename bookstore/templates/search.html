@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>搜索结果</title>
+</head>
+<body>
+<h2>搜索结果</h2>
+
+{% if query %}
+    <p>你搜索的是：{{ query }}</p>
+{% endif %}
+
+{% if results %}
+    {% for book in results %}
+        <div>
+            <a href="{% url 'book_detail' book.id %}">
+                {{ book.title }} - ￥{{ book.price }}
+            </a>
+        </div>
+    {% endfor %}
+{% else %}
+    <p>没有找到相关书籍 😢</p>
+{% endif %}
+</body>
+</html>

@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>编辑地址</title>
+    <style>
+        body {
+            font-family: "微软雅黑", Arial, sans-serif;
+            background-color: #f5f5f5;
+            padding: 20px;
+        }
+
+        .form-container {
+            max-width: 500px;
+            margin: 50px auto;
+            background-color: #fff;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .form-container h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 8px 10px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            font-size: 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="form-container">
+    <h2>编辑地址</h2>
+    <form method="post" action="">
+        {% csrf_token %}
+
+        <div class="form-group">
+            <label for="recipient">收件人</label>
+            <input type="text" name="recipient" id="recipient" value="{{ address.receiver_name }}" placeholder="请输入收件人姓名" required>
+        </div>
+
+        <div class="form-group">
+            <label for="phone">手机号</label>
+            <input type="text" name="phone" id="phone" value="{{ address.phone }}" placeholder="请输入手机号" required>
+        </div>
+
+        <div class="form-group">
+            <label for="province">省份</label>
+            <input type="text" name="province" id="province" value="{{ address.province }}" placeholder="请输入省份">
+        </div>
+
+        <div class="form-group">
+            <label for="city">城市</label>
+            <input type="text" name="city" id="city" value="{{ address.city }}" placeholder="请输入城市">
+        </div>
+
+        <div class="form-group">
+            <label for="district">区/县</label>
+            <input type="text" name="district" id="district" value="{{ address.district }}" placeholder="请输入区或县">
+        </div>
+
+        <div class="form-group">
+            <label for="detail">详细地址</label>
+            <input type="text" name="detail" id="detail" value="{{ address.detail }}" placeholder="请输入街道、门牌号等详细信息" required>
+        </div>
+
+        <div class="form-group">
+            <label for="postal_code">邮编</label>
+            <input type="text" name="postal_code" id="postal_code" value="{{ address.postal_code }}" placeholder="请输入邮政编码">
+        </div>
+
+        <button type="submit">保存修改</button>
+    </form>
+</div>
+
+</body>
+</html>

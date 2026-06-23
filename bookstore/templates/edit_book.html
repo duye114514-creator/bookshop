@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>编辑书籍</title>
+
+    <style>
+        body{
+            background:#f5f5f5;
+            font-family: Arial;
+        }
+
+        .box{
+            width:400px;
+            margin:80px auto;
+            background:#fff;
+            padding:30px;
+            border-radius:8px;
+            box-shadow:0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        h2{
+            text-align:center;
+            margin-bottom:20px;
+        }
+
+        input, textarea, select{
+            width:100%;
+            padding:8px;
+            margin-bottom:12px;
+            border:1px solid #ddd;
+            border-radius:5px;
+        }
+
+        button{
+            width:100%;
+            padding:10px;
+            background:#007bff;
+            color:#fff;
+            border:none;
+            border-radius:5px;
+            cursor:pointer;
+        }
+
+        button:hover{
+            background:#0069d9;
+        }
+
+        .back{
+            text-align:center;
+            margin-top:15px;
+        }
+
+        .back a{
+            color:#007bff;
+            text-decoration:none;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="box">
+
+    <h2>编辑书籍</h2>
+
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <label>书名</label>
+    {{ form.title }}
+
+    <label>作者</label>
+    {{ form.author }}
+
+    <label>价格</label>
+    {{ form.price }}
+
+    <label>描述</label>
+    {{ form.description }}
+
+    <label>库存</label>
+    {{ form.stock }}
+
+    <label>封面图片</label>
+    {{ form.image }}
+
+    <label>分类</label>
+    {{ form.category }}
+        <button type="submit">保存修改</button>
+    </form>
+
+    <div class="back">
+        <a href="{% url 'my_books' %}">← 返回我的书籍</a>
+    </div>
+
+</div>
+
+</body>
+</html>

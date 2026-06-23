@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% block title %}结算成功{% endblock %}
+
+{% block content %}
+<div style="width:600px; margin:50px auto; text-align:center; background:#fff; padding:20px; border-radius:8px; box-shadow:0 0 10px rgba(0,0,0,0.1);">
+    <h1>结算成功！🎉</h1>
+    <p>感谢您的购买，您的订单已生成。</p>
+    <a href="{% url 'home' %}" style="padding:10px 20px; background:#007bff; color:white; text-decoration:none; border-radius:4px;">返回首页</a>
+</div>
+{% endblock %}

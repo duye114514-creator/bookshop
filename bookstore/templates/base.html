@@ -1,0 +1,157 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}知阅书坊{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <style>
+
+
+
+        /* 头部 */
+.header {
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:12px 30px;
+    background:#fff;
+    box-shadow:0 2px 10px rgba(0,0,0,0.05);
+    position:sticky;
+    top:0;
+    z-index:100;
+}
+
+/* logo */
+.logo {
+    font-size:22px;
+    font-weight:bold;
+    text-decoration:none;
+    color:#333;
+}
+
+/* 右侧 */
+.nav-right {
+    display:flex;
+    align-items:center;
+    gap:20px;
+}
+.nav-left { font-size:20px;
+ font-weight:bold; }
+
+        /* 头像下拉菜单 */
+.dropdown { position:relative;
+        display:inline-block;
+        cursor:pointer; }
+.dropdown-content {
+            display:none;
+            position:absolute;
+            right:0;
+            background:#fff;
+            border:1px solid #ccc;
+            min-width:150px;
+            z-index:1000;
+            border-radius:4px;
+        }
+.dropdown-content a {
+        display:block;
+        padding:5px 10px;
+        text-decoration:none;
+         color:#333;
+}
+.dropdown-content a:hover {
+    background:#f5f5f5;
+}
+.search-box {
+    display:flex;
+    border:1px solid #ddd;
+    border-radius:20px;
+    overflow:hidden;
+}
+
+.search-box input {
+    border:none;
+    padding:6px 12px;
+    outline:none;
+    width:180px;
+}
+
+.search-box button {
+    border:none;
+    background:#ff6700;
+    color:#fff;
+    padding:6px 12px;
+    cursor:pointer;
+}
+.cart {
+    font-size:20px;
+    text-decoration:none;
+}
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <!-- 左侧 LOGO -->
+    <div class="nav-left">
+    <a href="{% url 'home' %}" class="logo">
+        知阅书坊
+    </a>
+</div>
+
+    <!-- 右侧导航 -->
+    <div class="nav-right">
+        <!-- 搜索栏 -->
+        <form method="get" action="{% url 'search' %}" class="search-box">
+            <input type="text" name="q" placeholder="搜索你想要的书..." value="{{ query }}">
+            <button type="submit">🔍</button>
+        </form>
+
+        <!-- 购物车图标 -->
+        <a href="{% url 'cart' %}">🛒</a>
+
+        <!-- 登录状态 -->
+        {% if user.is_authenticated %}
+            <div class="dropdown" id="avatar-dropdown">
+                <span>👤 {{ user.username }}</span>
+                <div class="dropdown-content" id="dropdown-menu">
+                    <a href="/profile/">个人中心</a>
+                    <!-- 所有用户都可以管理自己的书籍 -->
+                    <a href="/my_books/" target="_blank">书籍管理</a>
+                    {% if user.is_staff %}
+                    <!-- 管理员额外后台入口 -->
+                    <a href="{% url 'admin:index' %}" target="_blank">后台管理</a>
+                    {% endif %}
+                    <a href="{% url 'logout' %}" style="color:red;">退出登录</a>
+                </div>
+            </div>
+        {% else %}
+            <a href="{% url 'login' %}">登录</a>
+            <a href="{% url 'register' %}">注册</a>
+        {% endif %}
+    </div>
+</div>
+
+<!-- 页面主体 -->
+<div class="content">
+    {% block content %}{% endblock %}
+</div>
+
+<script>
+    // 下拉菜单点击切换
+    const avatar = document.getElementById('avatar-dropdown');
+    const menu = document.getElementById('dropdown-menu');
+
+    avatar.addEventListener('click', function(e){
+        e.stopPropagation();
+        menu.style.display = menu.style.display==='block' ? 'none' : 'block';
+    });
+
+    // 点击空白收起菜单
+    document.addEventListener('click', function(){
+        menu.style.display = 'none';
+    });
+</script>
+
+</body>
+</html>

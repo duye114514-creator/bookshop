@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>知阅书坊 - 购物车</title>
+
+    <style>
+        body {
+            margin: 0;
+            background: #f2f4f7;
+            font-family: "Microsoft YaHei", sans-serif;
+        }
+
+        /* 顶部栏 */
+        .top-bar {
+            background: #fff;
+            padding: 15px 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .top-bar a {
+            text-decoration: none;
+            color: #333;
+            font-weight: bold;
+        }
+
+        /* 容器 */
+        .cart-container {
+            width: 900px;
+            margin: 30px auto;
+        }
+
+        /* 标题 */
+        .title {
+            font-size: 22px;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+
+        /* 商品卡片 */
+        .cart-item {
+            background: #fff;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+            transition: 0.2s;
+        }
+
+        .cart-item:hover {
+            transform: translateY(-2px);
+        }
+
+        /* 勾选框 */
+        .select-item {
+            width: 18px;
+            height: 18px;
+            margin-right: 12px;
+        }
+
+        /* 商品信息区域 */
+        .item-info {
+            flex: 1;
+        }
+
+        .item-title {
+            font-size: 15px;
+            font-weight: bold;
+            color: #333;
+            text-decoration: none;
+        }
+
+        .item-title:hover {
+            color: #ff6700;
+        }
+
+        .item-meta {
+            font-size: 13px;
+            color: #888;
+            margin-top: 5px;
+        }
+
+        /* 数量 */
+        .qty {
+            width: 60px;
+            padding: 4px;
+            margin-left: 20px;
+        }
+
+        /* 价格 */
+        .price-box {
+            width: 120px;
+            text-align: right;
+        }
+
+        .price {
+            color: #e4393c;
+            font-weight: bold;
+        }
+
+        /* 底部操作栏 */
+        .cart-actions {
+            background: #fff;
+            padding: 15px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .left-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* 按钮统一风格 */
+        button {
+            border: none;
+            padding: 10px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .btn-delete {
+            background: #ff4d4f;
+            color: #fff;
+        }
+
+        .btn-checkout {
+            background: #52c41a;
+            color: #fff;
+        }
+
+        .total {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .total span {
+            color: #e4393c;
+        }
+
+    </style>
+</head>
+
+<body>
+
+<div class="top-bar">
+    <a href="{% url 'home' %}">🏠 返回首页 - 知阅书坊</a>
+</div>
+
+<div class="cart-container">
+
+    <div class="title">🛒 我的购物车</div>
+
+    {% for item in carts %}
+    <div class="cart-item" data-item-id="{{ item.id }}">
+
+        <!-- 勾选框 -->
+        <input type="checkbox" class="select-item" checked>
+
+        <!-- 商品信息（整个可点击） -->
+        <div class="item-info">
+            <a class="item-title" href="/book/{{ item.book.id }}/">
+                {{ item.book.title }}
+            </a>
+            <div class="item-meta">知阅书坊精选好书</div>
+        </div>
+
+        <!-- 数量 -->
+        <input type="number"
+               class="qty-input qty"
+               name="qty_{{ item.id }}"
+               value="{{ item.quantity }}"
+               min="1"
+               data-price="{{ item.book.price }}">
+
+        <!-- 单价 -->
+        <div class="price-box">
+            单价<br>
+            <span class="price">￥{{ item.book.price }}</span>
+        </div>
+
+        <!-- 小计 -->
+        <div class="price-box">
+            小计<br>
+            <span class="price subtotal">{{ item.total_price }}</span>
+        </div>
+
+    </div>
+    {% endfor %}
+
+    <!-- 底部 -->
+    <div class="cart-actions">
+
+        <div class="left-actions">
+            <input type="checkbox" id="select-all" checked>
+            <label for="select-all">全选</label>
+
+            <button class="btn-delete" id="delete-selected">删除选中</button>
+        </div>
+
+        <div class="total">
+            合计：<span id="total">{{ total }}</span> 元
+        </div>
+
+        <button class="btn-checkout" id="checkout-selected">
+            去结算
+        </button>
+
+    </div>
+
+</div>
+
+<script>
+
+// ===== 计算总价 =====
+function calcTotal() {
+    let total = 0;
+
+    document.querySelectorAll('.cart-item').forEach(item => {
+        const cb = item.querySelector('.select-item');
+        if (cb.checked) {
+            const price = parseFloat(item.querySelector('.qty-input').dataset.price);
+            const qty = parseInt(item.querySelector('.qty-input').value);
+            total += price * qty;
+        }
+    });
+
+    document.getElementById('total').innerText = total.toFixed(2);
+}
+
+// ===== 数量更新 =====
+document.querySelectorAll('.qty-input').forEach(input => {
+    input.addEventListener('input', () => {
+
+        const price = parseFloat(input.dataset.price);
+        const qty = parseInt(input.value);
+
+        input.closest('.cart-item')
+            .querySelector('.subtotal')
+            .innerText = (price * qty).toFixed(2);
+
+        const formData = new FormData();
+        formData.append(input.name, input.value);
+
+        fetch("{% url 'update_cart_ajax' %}", {
+            method: "POST",
+            headers: { 'X-CSRFToken': '{{ csrf_token }}' },
+            body: formData
+        });
+
+        calcTotal();
+    });
+});
+
+// ===== 勾选 =====
+document.querySelectorAll('.select-item').forEach(cb => {
+    cb.addEventListener('change', calcTotal);
+});
+
+// ===== 全选 =====
+document.getElementById('select-all').addEventListener('change', function () {
+    document.querySelectorAll('.select-item').forEach(cb => {
+        cb.checked = this.checked;
+    });
+    calcTotal();
+});
+
+// ===== 删除 =====
+document.getElementById('delete-selected').addEventListener('click', () => {
+
+    const ids = Array.from(document.querySelectorAll('.select-item'))
+        .filter(cb => cb.checked)
+        .map(cb => cb.closest('.cart-item').dataset.itemId);
+
+    if (ids.length === 0) {
+        alert("请选择商品");
+        return;
+    }
+
+    fetch("{% url 'batch_delete' %}", {
+        method: "POST",
+        headers: {
+            'X-CSRFToken': '{{ csrf_token }}',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ ids })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            ids.forEach(id => {
+                document.querySelector(`[data-item-id="${id}"]`).remove();
+            });
+            calcTotal();
+        }
+    });
+
+});
+
+// ===== 结算（保留原逻辑）=====
+document.getElementById('checkout-selected').addEventListener('click', () => {
+
+    const ids = Array.from(document.querySelectorAll('.select-item'))
+        .filter(cb => cb.checked)
+        .map(cb => cb.closest('.cart-item').dataset.itemId);
+
+    if (ids.length === 0) {
+        alert("请选择商品");
+        return;
+    }
+
+    // 跳转到确认订单页
+    window.location.href = "{% url 'checkout' %}";
+});
+
+// 初始计算
+calcTotal();
+
+</script>
+
+</body>
+</html>

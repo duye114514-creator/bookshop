@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div class="fav-box">
+
+    <h3>⭐ 我的收藏</h3>
+
+    <div class="fav-list">
+        {% for f in favorites %}
+        <div class="fav-item">
+
+            <a href="{% url 'book_detail' f.book.id %}">
+                {% if f.book.image %}
+                <img src="{{ f.book.image.url }}">
+                {% endif %}
+                <p>{{ f.book.title }}</p>
+                <span>￥{{ f.book.price }}</span>
+            </a>
+
+        </div>
+        {% empty %}
+        <p>你还没有收藏任何书 😢</p>
+        {% endfor %}
+    </div>
+
+</div>
+
+<style>
+.fav-box{
+    margin-top:30px;
+}
+
+.fav-list{
+    display:flex;
+    flex-wrap:wrap;
+    gap:15px;
+}
+
+.fav-item{
+    width:150px;
+    padding:10px;
+    background:#fff;
+    border-radius:6px;
+    box-shadow:0 0 8px rgba(0,0,0,0.1);
+    text-align:center;
+}
+
+.fav-item img{
+    width:100%;
+    height:120px;
+    object-fit:cover;
+}
+
+.fav-item p{
+    font-size:14px;
+    margin:5px 0;
+}
+
+.fav-item span{
+    color:red;
+}
+</style>
+</body>
+</html>

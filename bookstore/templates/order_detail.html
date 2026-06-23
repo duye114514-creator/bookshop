@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<title>订单详情</title>
+
+<style>
+body{
+    margin:0;
+    font-family: Arial;
+    background:#f5f5f5;
+}
+
+/* 页面容器 */
+.page{
+    width:900px;
+    margin:30px auto;
+}
+
+/* 顶部 */
+.top{
+    display:flex;
+    justify-content:space-between;
+    margin-bottom:15px;
+}
+
+.top a{
+    text-decoration:none;
+    color:#666;
+}
+
+/* 统一大卡片 */
+.box{
+    background:#fff;
+    border-radius:12px;
+    padding:20px;
+    box-shadow:0 2px 8px rgba(0,0,0,0.05);
+}
+
+/* 分区线 */
+.line{
+    border-top:1px solid #eee;
+    margin:15px 0;
+}
+
+/* 商品 */
+.item{
+    display:flex;
+    align-items:center;
+    padding:10px 0;
+}
+
+.item img{
+    width:70px;
+    height:90px;
+    object-fit:cover;
+    border-radius:6px;
+}
+
+.info{
+    margin-left:15px;
+    flex:1;
+}
+
+.title{
+    font-size:15px;
+    margin:0;
+}
+
+.small{
+    font-size:13px;
+    color:#666;
+}
+
+/* 状态 */
+.status{
+    font-size:14px;
+    margin-top:5px;
+}
+
+.status span{
+    color:#ff6700;
+    font-weight:bold;
+}
+
+/* 总价 */
+.total{
+    text-align:right;
+    font-size:16px;
+}
+
+.total span{
+    color:#e4393c;
+    font-size:20px;
+    font-weight:bold;
+}
+
+/* 按钮 */
+.btn{
+    width:100%;
+    padding:12px;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+    margin-top:10px;
+}
+
+.pay{
+    background:#e4393c;
+    color:#fff;
+}
+
+.refund{
+    background:#ff9800;
+    color:#fff;
+}
+
+/* meta */
+.meta{
+    font-size:13px;
+    color:#777;
+}
+</style>
+</head>
+
+<body>
+
+<div class="page">
+
+    <div class="top">
+        <h2>📦 订单详情</h2>
+        <a href="/">🏠 返回首页</a>
+    </div>
+
+    <!-- ⭐ 一个大框 -->
+    <div class="box">
+
+        <!-- 订单信息 -->
+        <div class="meta">订单号：{{ order.id }}</div>
+        <div class="meta">时间：{{ order.created_at|date:"Y-m-d H:i" }}</div>
+
+        <div class="status">
+            状态：
+            <span>{{ order.status }}</span>
+        </div>
+
+        <div class="line"></div>
+
+        <!-- 商品 -->
+        {% for item in items %}
+        <div class="item">
+
+            <img src="{{ item.book.image.url }}">
+
+            <div class="info">
+                <p class="title">{{ item.book.title }}</p>
+                <p class="small">单价：￥{{ item.price }}</p>
+                <p class="small">数量：{{ item.quantity }}</p>
+            </div>
+
+        </div>
+        {% endfor %}
+
+        <div class="line"></div>
+
+        <!-- 总价 -->
+        <div class="total">
+            总价：<span>￥{{ order.total_price }}</span>
+        </div>
+
+        <div class="line"></div>
+
+        <!-- 操作 -->
+        {% if not order.is_paid %}
+        <form method="post" action="{% url 'pay_order' order.id %}">
+            {% csrf_token %}
+            <button class="btn pay">💳 立即支付</button>
+        </form>
+        {% else %}
+        <p style="color:green;font-weight:bold;">✔ 已支付</p>
+        {% endif %}
+
+        {% if order.status == 'paid' or order.status == 'not_shipped' %}
+        <form method="post" action="{% url 'refund_order' order.id %}">
+            {% csrf_token %}
+            <button class="btn refund">申请退款</button>
+        </form>
+        {% endif %}
+
+    </div>
+
+</div>
+
+</body>
+</html>

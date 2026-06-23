@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>论坛 - 知阅书坊</title>
+
+    <style>
+        body{
+            background:#f5f5f5;
+            font-family: Arial;
+        }
+
+        .container{
+            width:800px;
+            margin:30px auto;
+        }
+
+        /* 顶部标题 */
+        .header{
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            margin-bottom:20px;
+        }
+
+        .header h2{
+            font-size:22px;
+        }
+
+        /* 布局 */
+        .layout{
+            display:flex;
+            gap:20px;
+        }
+
+        .posts{
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+}
+
+/* 整卡可点击 */
+.post-card{
+    display:block;
+    padding:14px 16px;
+    background:#fff;
+    border-radius:10px;
+    text-decoration:none;
+    color:#333;
+    transition:0.2s;
+    box-shadow:0 2px 6px rgba(0,0,0,0.04);
+}
+
+.post-card:hover{
+    transform:translateY(-2px);
+    box-shadow:0 6px 15px rgba(0,0,0,0.08);
+}
+
+/* 标题 */
+.post-title{
+    font-size:15px;
+    font-weight:600;
+    color:#222;
+    margin-bottom:6px;
+
+    /* 防止太长撑爆 */
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+}
+
+/* 作者信息 */
+.post-meta{
+    font-size:12px;
+    color:#888;
+}
+
+        /* 右侧发帖 */
+        .form-box{
+            flex:1;
+            background:#fff;
+            padding:15px;
+            border-radius:10px;
+            height:fit-content;
+            box-shadow:0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        input, textarea{
+            width:100%;
+            padding:8px;
+            margin-bottom:10px;
+            border:1px solid #ddd;
+            border-radius:6px;
+            outline:none;
+        }
+
+        textarea{
+            height:120px;
+            resize:none;
+        }
+
+        button{
+            width:100%;
+            padding:10px;
+            background:#ff6700;
+            color:#fff;
+            border:none;
+            border-radius:6px;
+            cursor:pointer;
+        }
+
+        button:hover{
+            background:#e65c00;
+        }
+
+        a{
+            text-decoration:none;
+        }
+    </style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="header">
+        <h2>💬 论坛社区</h2>
+        <a href="{% url 'home' %}">← 返回首页</a>
+    </div>
+
+    <div class="layout">
+
+        <!-- 左侧：帖子列表 -->
+        <div class="posts">
+
+    {% for post in posts %}
+        <a href="{% url 'post_detail' post.id %}" class="post-card">
+
+            <div class="post-title">
+                {{ post.title }}
+            </div>
+
+            <div class="post-meta">
+                👤 {{ post.user.username }}
+            </div>
+
+        </a>
+        {% empty %}
+        <p>暂无帖子</p>
+        {% endfor %}
+
+        </div>
+
+        <!-- 右侧：发帖 -->
+        <div class="form-box">
+
+            <h3>✍ 发帖</h3>
+
+            <form method="post">
+    {% csrf_token %}
+    <input type="text" name="title">
+    <textarea name="content"></textarea>
+    <button type="submit">发布</button>
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>

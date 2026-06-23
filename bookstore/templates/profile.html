@@ -1,0 +1,231 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>个人中心</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <style>
+        body { font-family: Arial, sans-serif; margin:0; padding:0; background:#f5f5f5; }
+        .profile-header {
+            display:flex; padding:20px; background:#fff; align-items:center; box-shadow:0 2px 5px rgba(0,0,0,0.1);
+        }
+        .avatar { width:80px; height:80px; border-radius:50%; margin-right:20px; }
+        .user-info { line-height:1.5; }
+        .nav-tabs { display:flex; background:#eee; padding:10px; }
+        .nav-tabs div { margin-right:20px; cursor:pointer; padding:5px 10px; border-radius:4px; }
+        .nav-tabs .active { background:#007bff; color:#fff; }
+        .tab-content { padding:20px; background:#fff; margin-top:10px; min-height:300px; }
+        .tab-content > div { display:none; }
+        .tab-content > div.active { display:block; }
+
+        /* 二级导航样式 */
+        .sub-nav { display:flex; margin-top:10px; border-bottom:1px solid #ccc; }
+        .sub-nav div { margin-right:15px; padding:5px 10px; cursor:pointer; border-radius:4px; }
+        .sub-nav .active { background:#28a745; color:#fff; }
+
+        .order-item { padding:8px; border-bottom:1px solid #eee; }
+
+        /*回家按钮*/
+            .top-nav{
+                margin-bottom:20px;
+            }
+
+            .home-btn{
+                 display:inline-block;
+                 padding:8px 16px;
+                 background:#4CAF50;
+                 color:white;
+                 text-decoration:none;
+                 border-radius:5px;
+                 font-size:14px;
+            }
+
+.home-btn:hover{
+    background:#45a049;
+}
+
+        .order-link{
+text-decoration:none;
+color:black;
+}
+
+.order-item{
+border:1px solid #ddd;
+padding:15px;
+margin-bottom:12px;
+border-radius:8px;
+background:#fafafa;
+cursor:pointer;
+transition:0.2s;
+}
+
+.order-item:hover{
+box-shadow:0 3px 10px rgba(0,0,0,0.15);
+transform:translateY(-2px);
+}
+
+    </style>
+</head>
+<body>
+
+
+
+<div class="top-nav">
+    <a href="{% url 'home' %}" class="home-btn">返回首页</a>
+</div>
+<!-- 顶部个人信息 -->
+<div class="profile-header">
+
+    <div class="user-info">
+        <h2>{{ user.username }}</h2>
+        <p>账号：{{ user.id }}</p>
+    </div>
+</div>
+
+<!-- 一级导航栏 -->
+<div class="nav-tabs">
+    <div class="tab-link active" data-tab="orders">我的订单</div>
+    <div class="tab-link" data-tab="address">地址</div>
+    <div class="tab-link" data-tab="customer">官方客服</div>
+    <div class="tab-link" data-tab="footprint">足迹</div>
+    <div class="tab-link" data-tab="account">账号与安全</div>
+    <div class="tab-link" data-tab="payment">支付设置</div>
+    <div class="tab-link" data-tab="favorites">收藏</div>
+    <div class="tab-link" data-tab="messages">消息中心</div>
+</div>
+
+<!-- 模块内容 -->
+<div class="tab-content">
+    <!-- 我的订单模块 -->
+    <div id="orders" class="active">
+        <h3>我的订单</h3>
+
+
+        <!-- 二级导航 -->
+        <div class="sub-nav">
+            <div class="sub-tab {% if selected_subtab == 'all' %}active{% endif %}" data-subtab="all">全部订单</div>
+            <div class="sub-tab {% if selected_subtab == 'unpaid' %}active{% endif %}" data-subtab="unpaid">未支付</div>
+            <div class="sub-tab {% if selected_subtab == 'shipped' %}active{% endif %}" data-subtab="shipped">已发货</div>
+            <div class="sub-tab {% if selected_subtab == 'not_shipped' %}active{% endif %}" data-subtab="not_shipped">未发货</div>
+            <div class="sub-tab {% if selected_subtab == 'received' %}active{% endif %}" data-subtab="received">已收货</div>
+            <div class="sub-tab {% if selected_subtab == 'refund' %}active{% endif %}" data-subtab="refund">退款中</div>
+        </div>
+
+        <!-- 二级内容区域 -->
+        <div class="subtab-content">
+            {% if orders %}
+                {% for order in orders %}
+                <a href="{% url 'order_detail' order.id %}" class="order-link">
+                    <div class="order-item">
+                        订单ID: {{ order.id }} | 金额: ￥{{ order.total_price }} | 状态: {{ order.get_status_display }} | 下单时间: {{ order.created_at }}
+                    </div>
+                </a>
+                {% endfor %}
+            {% else %}
+                <p>暂无订单。</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- 其他模块 -->
+    <div id="address">
+    <h3>地址管理</h3>
+    {% if addresses %}
+        <ul>
+        {% for addr in addresses %}
+            <li>
+                {{ addr.receiver_name }} | {{ addr.phone }} | {{ addr.detail }}
+                <a href="{% url 'address_edit' addr.id %}">编辑</a>
+                <form style="display:inline;" method="post" action="{% url 'delete_address' addr.id %}">
+                    {% csrf_token %}
+                    <button type="submit">删除</button>
+                </form>
+            </li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <p>你还没有添加地址。</p>
+    {% endif %}
+
+    <h4>新增地址</h4>
+<form method="post" action="{% url 'address_add' %}">
+    {% csrf_token %}
+    <input type="text" name="recipient" placeholder="收件人" required>
+    <input type="text" name="phone" placeholder="手机号" required>
+    <input type="text" name="province" placeholder="省份">
+    <input type="text" name="city" placeholder="城市">
+    <input type="text" name="district" placeholder="区/县">
+    <input type="text" name="detail" placeholder="详细地址" required>
+    <input type="text" name="postal_code" placeholder="邮编">
+    <button type="submit">添加</button>
+</form>
+    </div>
+    <div id="customer">
+        <h3>官方客服</h3>
+        <p>这里放客服联系方式或聊天入口...</p>
+    </div>
+    <div id="footprint">
+        <h3>足迹</h3>
+        <p>这里显示浏览过的商品...</p>
+    </div>
+    <div id="account">
+        <h3>账号与安全</h3>
+        <p>修改密码、绑定手机号等...</p>
+    </div>
+    <div id="payment">
+        <h3>支付设置</h3>
+        <p>银行卡、支付密码设置...</p>
+    </div>
+    <div id="favorites">
+        <h3>收藏</h3>
+        {% if favorites %}
+            {% include 'components/favorites.html' %}
+        {% else %}
+            <p>暂无收藏。</p>
+        {% endif %}
+    </div>
+    <div id="messages">
+        <h3>消息中心</h3>
+        {% if messages %}
+            <ul>
+            {% for msg in messages %}
+                <li>{% if not msg.read %}<strong>NEW</strong>{% endif %} {{ msg.content }} | {{ msg.created_at }}</li>
+            {% endfor %}
+            </ul>
+        {% else %}
+            <p>暂无消息。</p>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+    // 一级 Tab 切换
+    const tabs = document.querySelectorAll('.tab-link');
+    const contents = document.querySelectorAll('.tab-content > div');
+    tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            tabs.forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+
+            const target = tab.getAttribute('data-tab');
+            contents.forEach(c => c.classList.remove('active'));
+            document.getElementById(target).classList.add('active');
+        });
+    });
+
+    // 二级 Tab 切换（刷新页面传参数）
+    const subTabs = document.querySelectorAll('.sub-tab');
+    subTabs.forEach(sub => {
+        sub.addEventListener('click', () => {
+            subTabs.forEach(s => s.classList.remove('active'));
+            sub.classList.add('active');
+
+            const subtab = sub.getAttribute('data-subtab');
+            window.location.href = `?subtab=${subtab}#orders`;
+        });
+    });
+</script>
+
+</body>
+</html>

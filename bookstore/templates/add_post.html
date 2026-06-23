@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>发帖</title>
+</head>
+<body>
+<h2>发帖</h2>
+
+<form method="post">
+    {% csrf_token %}
+    <input type="text" name="title" placeholder="标题" required><br><br>
+    <textarea name="content" placeholder="内容" required></textarea><br><br>
+    <button type="submit">发布</button>
+</form>
+</body>
+</html>
